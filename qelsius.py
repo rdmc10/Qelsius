@@ -577,6 +577,7 @@ class Ui_Weather(object):
         self.retranslateUi(Weather)
         QtCore.QMetaObject.connectSlotsByName(Weather)
         self.get_dates()
+        self.default_start()
 
     def get_dates(self):
         today = datetime.now()
@@ -592,7 +593,6 @@ class Ui_Weather(object):
         self.day3_date.setText(date3)
         self.day4_date.setText(date4)
 
-    #TO DO: Rewrite this to change images according to weather type
     def get_weather_symbol(self,i,j,k):
         wthr = self.api['list'][i]['weather'][0]['main']
         if wthr == "Clouds":
@@ -628,22 +628,39 @@ class Ui_Weather(object):
                 self.get_weather_symbol(i,j,k)
                 i+=1
 
+    def default_start(self):
+        f=open("config.json","r")
+        self.config_data = json.load(f)
+        self.api_key = self.config_data['api_key']
+        f.close()
+        city = self.config_data['last_location']
+
+        api_request = requests.get("https://api.openweathermap.org/data/2.5/forecast?q="
+                                   + city+ "&units=metric&appid="+self.api_key)
+        self.api = json.loads(api_request.content)
+        if api_request:
+            self.output_data()
+            self.label_error.setText("")
+            self.lineEdit.setText(city)
+        else:
+            self.label_error.setText("Invalid city! Please check if you spelled your city correctly!")
 
     def get_data(self):
-        api_file = open('config.cfg','r')
-        api_key = api_file.readline().rstrip()
-        api_file.close()
-
-
         city_entry= str(self.lineEdit.text())
+
+
         api_request = requests.get("https://api.openweathermap.org/data/2.5/forecast?q="
-                                   + city_entry+ "&units=metric&appid="+api_key)
+                                   + city_entry+ "&units=metric&appid="+self.api_key)
 
         self.api = json.loads(api_request.content)
 
         if api_request:
             self.output_data()
             self.label_error.setText("")
+            g=open("config.json","w")
+            self.config_data['last_location']=city_entry
+            json.dump(self.config_data,g,indent=2)
+            g.close()
         else:
             self.label_error.setText("Invalid city! Please check if you spelled your city correctly!")
 
