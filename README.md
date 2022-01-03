@@ -10,6 +10,8 @@ Dependencies: python, pyqt5
 
 Qelsius expects a valid location to be entered (a city or a country/region). After that, a 4 day forecast will be displayed (temperatures in Celsius degrees), as well as icons indicating sunny weather, clouds, rain or snow. Qelsius will always display the weather for the last valid location you entered.
 
-If you want to test this, replace the "api_key" field in the config.json file with your own personal OpenWeather API key.
+If you want to test this, replace the "api_key" field in the config.json file with your own personal OpenWeather API key. The config file should be located in 
+your ~/.config/Qelsius folder.
+
 
 
